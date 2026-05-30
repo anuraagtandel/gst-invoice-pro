@@ -8,11 +8,9 @@ export default defineConfig({
             refresh: true,
         }),
     ],
+
     server: {
-        host: 'bhavin.plexuscard.link',  // ← your domain
+        host: '127.0.0.1',
         port: 5173,
-        hmr: {
-            host: 'bhavin.plexuscard.link',  // ← same domain
-        },
     },
 });

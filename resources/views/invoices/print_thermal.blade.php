@@ -5,20 +5,34 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Thermal Print {{ $invoice->invoice_no }}</title>
     <style>
-        @page { size: 80mm auto; margin: 4mm; }
+        @page {
+            size: 58mm auto;
+            margin: 0 !important;
+        }
         * { box-sizing: border-box; margin: 0; padding: 0; }
+        html, body {
+            width: 58mm !important;
+            max-width: 58mm !important;
+            margin: 0 !important;
+            padding: 0 !important;
+            overflow-x: hidden !important;
+            background: #fff !important;
+        }
         body {
             font-family: Helvetica, Arial, sans-serif;
             color: #111827;
-            font-size: 11px;
-            line-height: 1.35;
-            background: #ffffff;
+            font-size: 10px;
+            line-height: 1.25;
+            background: #fff;
+            -webkit-text-size-adjust: 100%;
         }
         .no-print { display: block; }
-        .wrap {
-            width: 80mm;
-            max-width: 80mm;
-            margin: 0 auto;
+        .thermal-receipt {
+            width: 58mm !important;
+            max-width: 58mm !important;
+            margin: 0 !important;
+            padding: 2mm !important;
+            box-sizing: border-box;
         }
         .topbar {
             display: flex;
@@ -44,76 +58,130 @@
             background: #ffffff;
             color: #111827;
         }
-        .section { padding: 10px 0; }
+        .section { padding: 6px 0; }
         .center { text-align: center; }
         .title {
-            font-size: 12px;
+            font-size: 11px;
             font-weight: 900;
-            letter-spacing: 0.08em;
+            letter-spacing: 0.02em;
             text-transform: uppercase;
-            margin-top: 6px;
+            margin-top: 4px;
         }
         .firm {
-            font-size: 14px;
+            font-size: 12px;
             font-weight: 900;
             text-transform: uppercase;
             line-height: 1.2;
         }
         .muted { color: #6b7280; }
-        .rule { border-top: 1px dashed #cbd5e1; margin: 10px 0; }
-        .kv { display: grid; grid-template-columns: 1fr 1fr; gap: 6px 10px; }
+        .rule { border-top: 1px dashed #cbd5e1; margin: 6px 0; }
+        .kv { display: grid; grid-template-columns: 1fr 1fr; gap: 4px 8px; }
         .kv .k { color: #6b7280; font-weight: 700; font-size: 10px; }
-        .kv .v { color: #111827; font-weight: 700; font-size: 11px; word-break: break-word; }
-        .kv-wide { display: grid; grid-template-columns: 1fr; gap: 6px; }
+        .kv .v { color: #111827; font-weight: 700; font-size: 10px; word-break: break-word; }
+        .kv-wide { display: grid; grid-template-columns: 1fr; gap: 4px; }
         .table {
             width: 100%;
             border-collapse: collapse;
             table-layout: fixed;
         }
-        .table th, .table td { padding: 6px 0; vertical-align: top; }
+        .table th, .table td { padding: 3px 0; vertical-align: top; }
         .table thead th {
-            font-size: 10px;
+            font-size: 9px;
             color: #111827;
             font-weight: 900;
             border-bottom: 1px solid #111827;
-            padding-bottom: 6px;
+            padding-bottom: 4px;
         }
-        .col-product { width: 40%; }
-        .col-qty { width: 14%; text-align: right; }
-        .col-rate { width: 16%; text-align: right; }
-        .col-gst { width: 14%; text-align: right; }
-        .col-amt { width: 16%; text-align: right; }
-        .pname { font-weight: 800; white-space: normal; word-break: break-word; }
-        .psub { font-size: 10px; color: #6b7280; font-weight: 700; margin-top: 2px; }
+        .pname { font-weight: 800; white-space: normal; word-break: break-word; overflow-wrap: anywhere; }
+        .psub { font-size: 9px; color: #6b7280; font-weight: 700; margin-top: 1px; }
+        .mono { font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, "Liberation Mono", "Courier New", monospace; }
+        .items { width: 100%; }
+        .item { padding: 4px 0; }
+        .item + .item { border-top: 1px dashed #cbd5e1; }
+        .line1 { display: block; }
+        .line2 { display: flex; justify-content: space-between; gap: 6px; margin-top: 1px; }
+        .meta { flex: 1 1 auto; min-width: 0; font-size: 9px; color: #111827; }
+        .amt { flex: 0 0 auto; text-align: right; font-weight: 900; }
+        .badge-free { font-size: 9px; font-weight: 900; letter-spacing: 0.03em; text-transform: uppercase; }
         .free {
-            margin-top: 6px;
-            padding: 8px;
+            margin-top: 4px;
+            padding: 6px;
             border: 1px solid #e5e7eb;
-            border-radius: 10px;
+            border-radius: 8px;
             background: #f8fafc;
         }
         .free .label {
-            font-size: 10px;
+            font-size: 9px;
             font-weight: 900;
-            letter-spacing: 0.08em;
+            letter-spacing: 0.04em;
             text-transform: uppercase;
             color: #0f172a;
         }
         .free .name { margin-top: 4px; font-weight: 900; word-break: break-word; }
-        .free .meta { margin-top: 4px; font-size: 11px; font-weight: 800; color: #111827; }
+        .free .meta { margin-top: 3px; font-size: 10px; font-weight: 800; color: #111827; }
         .totals { width: 100%; border-collapse: collapse; }
-        .totals td { padding: 4px 0; }
+        .totals td { padding: 3px 0; }
         .totals .k { color: #6b7280; font-weight: 800; }
         .totals .v { text-align: right; font-weight: 900; }
-        .grand { font-size: 13px; }
-        .qr { display: flex; justify-content: center; margin-top: 12px; }
-        .qr img { width: 120px; height: 120px; object-fit: contain; border: 1px solid #e5e7eb; padding: 4px; background: #fff; }
-        .footer { text-align: center; margin-top: 10px; font-weight: 900; }
+        .grand { font-size: 12px; }
+        .qr { display: flex; justify-content: center; margin-top: 8px; }
+        .qr img { width: 38mm; max-width: 40mm; height: auto; object-fit: contain; border: 1px solid #e5e7eb; padding: 2px; background: #fff; }
+        .footer { text-align: center; margin-top: 8px; font-weight: 900; }
         @media print {
-            body { background: #fff; }
-            .no-print { display: none !important; }
-            .topbar { display: none !important; }
-            .wrap { margin: 0; }
+            @page {
+                size: 58mm auto;
+                margin: 0 !important;
+            }
+
+            html,
+            body {
+                width: 58mm !important;
+                min-width: 58mm !important;
+                max-width: 58mm !important;
+
+                margin: 0 !important;
+                padding: 0 !important;
+
+                overflow: hidden !important;
+                background: #fff !important;
+            }
+
+            body * {
+                visibility: hidden;
+            }
+
+            .thermal-receipt,
+            .thermal-receipt * {
+                visibility: visible;
+            }
+
+            .thermal-receipt {
+                position: absolute;
+                left: 0;
+                top: 0;
+
+                width: 58mm !important;
+                max-width: 58mm !important;
+
+                margin: 0 !important;
+                padding: 2mm !important;
+
+                box-sizing: border-box;
+            }
+
+            table {
+                width: 100%;
+                border-collapse: collapse;
+                table-layout: fixed;
+            }
+
+            td,
+            th {
+                word-wrap: break-word;
+                overflow-wrap: break-word;
+                font-size: 9px !important;
+                padding: 1px 0;
+            }
         }
     </style>
 </head>
@@ -175,7 +243,7 @@
         }
     @endphp
 
-    <div class="wrap">
+    <div class="thermal-receipt">
         <div class="section center">
             <div class="firm">{{ $firmName !== '' ? $firmName : 'COMPANY' }}</div>
             @if($firmGstin !== '')
@@ -235,65 +303,38 @@
         <div class="rule"></div>
 
         <div class="section">
-            <table class="table">
-                <thead>
-                    <tr>
-                        <th class="col-product">PRODUCT</th>
-                        <th class="col-qty">QTY</th>
-                        <th class="col-rate">RATE</th>
-                        <th class="col-gst">GST</th>
-                        <th class="col-amt">AMOUNT</th>
-                    </tr>
-                </thead>
-                <tbody>
-                    @php $lastWasPaid = false; @endphp
-                    @foreach($invoice->invoiceItems as $item)
-                        @php
-                            $isFree = (bool) ($item->is_free ?? false);
-                            $qtyText = ((int) ($item->qty_ct ?? 0)) . '/' . ((int) ($item->qty_un ?? 0));
-                            $unitRate = $isFree ? 0.0 : (float) ($item->base_price ?? 0);
-                            $gstAmt = 0.0;
-                            if (!$isFree) {
-                                $gstAmt = (float) ($item->cgst ?? 0) + (float) ($item->sgst ?? 0) + (float) ($item->cess ?? 0);
-                            }
-                            $gstRate = 0.0;
-                            if (!$isFree) {
-                                $gstRate = (float) ($item->cgst_rate ?? 0) + (float) ($item->sgst_rate ?? 0) + (float) ($item->cess_rate ?? 0);
-                            }
-                            $lineTotal = $isFree ? 0.0 : (float) ($item->line_total ?? 0);
-                            $lastWasPaid = $lastWasPaid || (!$isFree);
-                        @endphp
-                        @if(!$isFree)
-                            <tr>
-                                <td class="col-product">
-                                    <div class="pname">{{ $item->product_description }}</div>
-                                    <div class="psub">HSN: {{ $item->hsn_code ?: '-' }}</div>
-                                </td>
-                                <td class="col-qty">{{ $qtyText }}</td>
-                                <td class="col-rate">{{ number_format($unitRate, 2) }}</td>
-                                <td class="col-gst">
-                                    <div>{{ number_format($gstAmt, 2) }}</div>
-                                    <div class="psub">{{ number_format($gstRate, 1) }}%</div>
-                                </td>
-                                <td class="col-amt">{{ number_format($lineTotal, 2) }}</td>
-                            </tr>
-                        @else
-                            <tr>
-                                <td class="col-product">
-                                    <div class="pname" style="font-weight: 900;">FREE: {{ $item->product_description }}</div>
-                                </td>
-                                <td class="col-qty">{{ $qtyText }}</td>
-                                <td class="col-rate">0.00</td>
-                                <td class="col-gst">
-                                    <div>0.00</div>
-                                    <div class="psub">0.0%</div>
-                                </td>
-                                <td class="col-amt">0.00</td>
-                            </tr>
-                        @endif
-                    @endforeach
-                </tbody>
-            </table>
+            <div class="items">
+                @foreach($invoice->invoiceItems as $item)
+                    @php
+                        $isFree = (bool) ($item->is_free ?? false);
+                        $qtyText = ((int) ($item->qty_ct ?? 0)) . '/' . ((int) ($item->qty_un ?? 0));
+                        $unitRate = $isFree ? 0.0 : (float) ($item->base_price ?? 0);
+                        $gstRate = 0.0;
+                        if (!$isFree) {
+                            $gstRate = (float) ($item->cgst_rate ?? 0) + (float) ($item->sgst_rate ?? 0) + (float) ($item->cess_rate ?? 0);
+                        }
+                        $lineTotal = $isFree ? 0.0 : (float) ($item->line_total ?? 0);
+                    @endphp
+
+                    <div class="item">
+                        <div class="line1">
+                            @if($isFree)
+                                <div class="pname"><span class="badge-free">FREE:</span> {{ $item->product_description }}</div>
+                            @else
+                                <div class="pname">{{ $item->product_description }}</div>
+                                <div class="psub">HSN: {{ $item->hsn_code ?: '-' }}</div>
+                            @endif
+                        </div>
+
+                        <div class="line2">
+                            <div class="meta mono">
+                                {{ $qtyText }} x {{ number_format($unitRate, 2) }}  GST {{ number_format($gstRate, 1) }}%
+                            </div>
+                            <div class="amt mono">{{ number_format($lineTotal, 2) }}</div>
+                        </div>
+                    </div>
+                @endforeach
+            </div>
         </div>
 
         <div class="rule"></div>
@@ -319,35 +360,32 @@
 
         <div class="section">
             <div style="font-weight: 900; margin-bottom: 6px;">GST SUMMARY</div>
-            <table class="table">
-                <thead>
-                    <tr>
-                        <th class="col-product">HSN</th>
-                        <th class="col-rate">CGST</th>
-                        <th class="col-rate">SGST</th>
-                        <th class="col-rate">IGST</th>
-                        <th class="col-amt"></th>
-                    </tr>
-                </thead>
-                <tbody>
-                    @foreach($hsnMap as $hsn => $vals)
-                        <tr>
-                            <td class="col-product"><div class="pname">{{ $hsn }}</div></td>
-                            <td class="col-rate">{{ number_format((float) ($vals['cgst'] ?? 0), 2) }}</td>
-                            <td class="col-rate">{{ number_format((float) ($vals['sgst'] ?? 0), 2) }}</td>
-                            <td class="col-rate">{{ number_format((float) ($vals['igst'] ?? 0), 2) }}</td>
-                            <td class="col-amt"></td>
-                        </tr>
-                    @endforeach
-                    <tr>
-                        <td class="col-product"><div class="pname">TOTAL</div></td>
-                        <td class="col-rate">{{ number_format($cgstTotal, 2) }}</td>
-                        <td class="col-rate">{{ number_format($sgstTotal, 2) }}</td>
-                        <td class="col-rate">{{ number_format($igstTotal, 2) }}</td>
-                        <td class="col-amt"></td>
-                    </tr>
-                </tbody>
-            </table>
+            <div class="items">
+                @foreach($hsnMap as $hsn => $vals)
+                    <div class="item">
+                        <div class="line1">
+                            <div class="pname">{{ $hsn }}</div>
+                        </div>
+                        <div class="line2">
+                            <div class="meta mono">
+                                CGST {{ number_format((float) ($vals['cgst'] ?? 0), 2) }}  SGST {{ number_format((float) ($vals['sgst'] ?? 0), 2) }}  IGST {{ number_format((float) ($vals['igst'] ?? 0), 2) }}
+                            </div>
+                            <div class="amt mono"></div>
+                        </div>
+                    </div>
+                @endforeach
+                <div class="item">
+                    <div class="line1">
+                        <div class="pname">TOTAL</div>
+                    </div>
+                    <div class="line2">
+                        <div class="meta mono">
+                            CGST {{ number_format($cgstTotal, 2) }}  SGST {{ number_format($sgstTotal, 2) }}  IGST {{ number_format($igstTotal, 2) }}
+                        </div>
+                        <div class="amt mono"></div>
+                    </div>
+                </div>
+            </div>
         </div>
 
         <div class="section">
