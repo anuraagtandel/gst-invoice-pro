@@ -2,7 +2,7 @@
 <html lang="en">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
     <title>Thermal Print {{ $invoice->invoice_no }}</title>
     <style>
         @page {
@@ -11,8 +11,8 @@
         }
         * { box-sizing: border-box; margin: 0; padding: 0; }
         html, body {
-            width: 58mm !important;
-            max-width: 58mm !important;
+            width: 100% !important;
+            max-width: 100% !important;
             margin: 0 !important;
             padding: 0 !important;
             overflow-x: hidden !important;
@@ -21,17 +21,17 @@
         body {
             font-family: Helvetica, Arial, sans-serif;
             color: #111827;
-            font-size: 10px;
+            font-size: 22px;
             line-height: 1.25;
             background: #fff;
             -webkit-text-size-adjust: 100%;
         }
         .no-print { display: block; }
         .thermal-receipt {
-            width: 58mm !important;
-            max-width: 58mm !important;
+            width: 100% !important;
+            max-width: 100% !important;
             margin: 0 !important;
-            padding: 2mm !important;
+            padding: 12px !important;
             box-sizing: border-box;
         }
         .topbar {
@@ -61,14 +61,14 @@
         .section { padding: 6px 0; }
         .center { text-align: center; }
         .title {
-            font-size: 11px;
+            font-size: 0.6em;
             font-weight: 900;
             letter-spacing: 0.02em;
             text-transform: uppercase;
             margin-top: 4px;
         }
         .firm {
-            font-size: 12px;
+            font-size: 0.8em;
             font-weight: 900;
             text-transform: uppercase;
             line-height: 1.2;
@@ -76,8 +76,8 @@
         .muted { color: #6b7280; }
         .rule { border-top: 1px dashed #cbd5e1; margin: 6px 0; }
         .kv { display: grid; grid-template-columns: 1fr 1fr; gap: 4px 8px; }
-        .kv .k { color: #6b7280; font-weight: 700; font-size: 10px; }
-        .kv .v { color: #111827; font-weight: 700; font-size: 10px; word-break: break-word; }
+        .kv .k { color: #6b7280; font-weight: 700; font-size: 0.55em; }
+        .kv .v { color: #111827; font-weight: 700; font-size: 0.6em; word-break: break-word; }
         .kv-wide { display: grid; grid-template-columns: 1fr; gap: 4px; }
         .table {
             width: 100%;
@@ -86,23 +86,23 @@
         }
         .table th, .table td { padding: 3px 0; vertical-align: top; }
         .table thead th {
-            font-size: 9px;
+            font-size: 0.55em;
             color: #111827;
             font-weight: 900;
             border-bottom: 1px solid #111827;
             padding-bottom: 4px;
         }
         .pname { font-weight: 800; white-space: normal; word-break: break-word; overflow-wrap: anywhere; }
-        .psub { font-size: 9px; color: #6b7280; font-weight: 700; margin-top: 1px; }
+        .psub { font-size: 0.55em; color: #6b7280; font-weight: 700; margin-top: 1px; }
         .mono { font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, "Liberation Mono", "Courier New", monospace; }
         .items { width: 100%; }
         .item { padding: 4px 0; }
         .item + .item { border-top: 1px dashed #cbd5e1; }
         .line1 { display: block; }
         .line2 { display: flex; justify-content: space-between; gap: 6px; margin-top: 1px; }
-        .meta { flex: 1 1 auto; min-width: 0; font-size: 9px; color: #111827; }
+        .meta { flex: 1 1 auto; min-width: 0; font-size: 0.55em; color: #111827; }
         .amt { flex: 0 0 auto; text-align: right; font-weight: 900; }
-        .badge-free { font-size: 9px; font-weight: 900; letter-spacing: 0.03em; text-transform: uppercase; }
+        .badge-free { font-size: 0.55em; font-weight: 900; letter-spacing: 0.03em; text-transform: uppercase; }
         .free {
             margin-top: 4px;
             padding: 6px;
@@ -111,19 +111,19 @@
             background: #f8fafc;
         }
         .free .label {
-            font-size: 9px;
+            font-size: 0.55em;
             font-weight: 900;
             letter-spacing: 0.04em;
             text-transform: uppercase;
             color: #0f172a;
         }
         .free .name { margin-top: 4px; font-weight: 900; word-break: break-word; }
-        .free .meta { margin-top: 3px; font-size: 10px; font-weight: 800; color: #111827; }
+        .free .meta { margin-top: 3px; font-size: 0.6em; font-weight: 800; color: #111827; }
         .totals { width: 100%; border-collapse: collapse; }
         .totals td { padding: 3px 0; }
         .totals .k { color: #6b7280; font-weight: 800; }
         .totals .v { text-align: right; font-weight: 900; }
-        .grand { font-size: 12px; }
+        .grand { font-size: 0.75em; }
         .qr { display: flex; justify-content: center; margin-top: 8px; }
         .qr img { width: 38mm; max-width: 40mm; height: auto; object-fit: contain; border: 1px solid #e5e7eb; padding: 2px; background: #fff; }
         .footer { text-align: center; margin-top: 8px; font-weight: 900; }
@@ -179,7 +179,7 @@
             th {
                 word-wrap: break-word;
                 overflow-wrap: break-word;
-                font-size: 9px !important;
+                font-size: inherit !important;
                 padding: 1px 0;
             }
         }
